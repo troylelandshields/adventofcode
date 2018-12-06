@@ -23,40 +23,29 @@ func doIt() error {
 	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
-	var countThree int
-	var countTwo int
+
+	seen := make(map[string]bool)
 
 	for scanner.Scan() {
-		hasThree, hasTwo := countLetters(scanner.Text())
+		s := scanner.Text()
 
-		countThree += hasThree
-		countTwo += hasTwo
+		possible := make(map[string]bool)
+
+		for i := 0; i < len(s); i++ {
+			sWithoutLetter := s[0:i] + s[i+1:len(s)]
+
+			if _, ok := seen[sWithoutLetter]; ok {
+				fmt.Println("answer:", sWithoutLetter)
+				return nil
+			}
+
+			possible[sWithoutLetter] = true
+		}
+
+		for p := range possible {
+			seen[p] = true
+		}
 	}
-
-	fmt.Println("answer:", countThree*countTwo)
 
 	return nil
-}
-
-func countLetters(s string) (int, int) {
-	letterCounts := make(map[rune]int)
-
-	for _, l := range s {
-		letterCounts[l]++
-	}
-
-	var hasThree, hasTwo int
-
-	for _, c := range letterCounts {
-
-		if c == 3 && hasThree == 0 {
-			hasThree = 1
-		}
-
-		if c == 2 && hasTwo == 0 {
-			hasTwo = 1
-		}
-	}
-
-	return hasThree, hasTwo
 }
